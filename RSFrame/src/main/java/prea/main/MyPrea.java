@@ -122,7 +122,11 @@ public class MyPrea {
 
 		// Read input file:
 		readArff(dataFileName + ".arff");
-
+		
+		
+		//信息熵计算
+		new Comentropy(rateMatrix, userCount, itemCount).runUserEntropy();
+		
 		// Train/test data split:
 		switch (evaluationMode) {
 		case DataSplitManager.SIMPLE_SPLIT:
