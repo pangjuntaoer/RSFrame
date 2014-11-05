@@ -20,9 +20,89 @@ public class SparseMatrix implements Serializable{
 	/** The array of column references. */
 	private SparseVector[] cols;
 
+	
+	/**
+	 * æ–°å¢žå­—æ®µï¼Œå­˜å‚¨å…¶ä»–è¯„åˆ†
+	 */
+	private double tast[][];
+	private double environment[][];
+	private double service[][];
 	/*========================================
 	 * Constructors
 	 *========================================*/
+	/**
+	 *é’ˆå¯¹å¤šè¯„åˆ†çš„æž„é€ å‡½æ•°
+	 * @param m
+	 * @param n
+	 * @param multiRate
+	 */
+	public SparseMatrix(int m, int n,boolean multiRate) {
+		this.M = m;
+		this.N = n;
+		rows = new SparseVector[M];
+		cols = new SparseVector[N];
+		tast = new double[m][n];
+		environment = new double[m][n];
+		service = new double[m][n];
+		for (int i = 0; i < M; i++) {
+			rows[i] = new SparseVector(N);
+		}
+		for (int j = 0; j < N; j++) {
+			cols[j] = new SparseVector(M);
+		}
+	}
+	/**
+	 * è®¾ç½®å€¼
+	 * @param i
+	 * @param j
+	 * @param value
+	 * @param tastRate
+	 * @param environmentRate
+	 * @param serviceRate
+	 * @throws Exception 
+	 */
+	public void setMultiValue(int i, int j, double value,double tastRate,double environmentRate,double serviceRate) throws Exception {
+		if(environment==null){
+			throw new Exception("è¯¥æ–¹æ³•å¿…é¡»æ˜¯ç”¨SparseMatrix(int m, int n,boolean multiRate) æž„é€ æ–¹æ³•çš„å¯¹è±¡");
+		}
+		if (value == 0.0) {
+			rows[i].remove(j);
+			cols[j].remove(i);
+		}
+		else {
+			rows[i].setValue(j, value);
+			cols[j].setValue(i, value);
+			tast[i][j] = tastRate;
+			environment[i][j] = environmentRate;
+			service [i][j] = serviceRate;
+		}
+	}
+	/**
+	 * èŽ·å–å¤šè¯„åˆ†ä¸­æŒ‡å®šçš„è¯„åˆ†
+	 * @param i
+	 * @param j
+	 * @param type
+	 * @return
+	 */
+	public double getMultiValue(int i,int j,String type){
+		if("tast".equals(type)){
+			return tast[i][j];
+		}else if("environment[i][j]".equals(type)){
+			return environment[i][j];
+		}else if("service".equals(type)){
+			return service[i][j];
+		}
+		return 0d;
+	}
+	/**
+	 * æ¸…ç©ºå¤šä½™è¯„åˆ†å†…å­˜
+	 */
+	public void clearMultiRate(){
+		tast = null;
+		environment = null;
+		service = null;
+	}
+	
 	/**
 	 * Construct an empty sparse matrix, with a given size.
 	 * 
@@ -97,7 +177,7 @@ public class SparseMatrix implements Serializable{
 	/**
 	 * Return a reference of a given row.
 	 * Make sure to use this method only for read-only purpose.
-	 * </br>»ñµÃµÚindexÐÐÏòÁ¿
+	 * </br>ï¿½ï¿½Ãµï¿½indexï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param index The row index to retrieve.
 	 * @return A reference to the designated row.
 	 */
@@ -121,7 +201,7 @@ public class SparseMatrix implements Serializable{
 	/**
 	 * Return a reference of a given column.
 	 * Make sure to use this method only for read-only purpose.
-	 * </br>»ñµÃµÚindexÁÐÏòÁ¿
+	 * </br>ï¿½ï¿½Ãµï¿½indexï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param index The column index to retrieve.
 	 * @return A reference to the designated column.
 	 */
@@ -386,7 +466,7 @@ public class SparseMatrix implements Serializable{
 	 *========================================*/
 	/**
 	 * Scalar subtraction (aX).
-	 * </br>Ò»¸ö³£Êý±êÁ¿*Ò»¸ö¾ØÕó
+	 * </br>Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param alpha The scalar value to be multiplied to this matrix.
 	 * @return The resulting matrix after scaling.
 	 */
@@ -477,7 +557,7 @@ public class SparseMatrix implements Serializable{
 	/**
 	 * The transpose of the matrix.
 	 * This is simply implemented by interchanging row and column each other. 
-	 * <br> ¼ÆËã¾ØÕó¾ØÕóµÄ×ªÖÃ¾ØÕó
+	 * <br> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½Ã¾ï¿½ï¿½ï¿½
 	 * @return The transpose of the matrix.
 	 */
 	public SparseMatrix transpose() {
@@ -491,7 +571,7 @@ public class SparseMatrix implements Serializable{
 	
 	/**
 	 * Matrix-vector product (b = Ax)
-	 * </br>¼ÆËã¾ØÕóÓëÏòÁ¿µÄ³Ë»ý=ÏòÁ¿
+	 * </br>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³Ë»ï¿½=ï¿½ï¿½ï¿½ï¿½
 	 * @param x The vector to be multiplied to this matrix.
 	 * @throws RuntimeException when dimensions disagree
 	 * @return The resulting vector after multiplication.
@@ -570,7 +650,7 @@ public class SparseMatrix implements Serializable{
 
 	/**
 	 * Matrix-matrix sum (C = A + B)
-	 * </br>¼ÆËãÁ½¸ö¾ØÕóÏà¼Ó
+	 * </br>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param B The matrix to be added to this matrix.
 	 * @throws RuntimeException when dimensions disagree
 	 * @return The resulting matrix after summation.
@@ -593,7 +673,7 @@ public class SparseMatrix implements Serializable{
 	
 	/**
 	 * Generate an identity matrix with the given size.</br>
-	 * 	´´½¨Ò»¸öfeatureCount*featureCountµ¥Î»·½Õó
+	 * 	ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½featureCount*featureCountï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
 	 * @param n The size of requested identity matrix.
 	 * @return An identity matrix with the size of n by n. 
 	 */
@@ -608,7 +688,7 @@ public class SparseMatrix implements Serializable{
 	
 	/**
 	 * Calculate inverse matrix.
-	 * </br>¼ÆËã·½ÕóµÄÄæ¾ØÕó
+	 * </br>ï¿½ï¿½ï¿½ã·½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @throws RuntimeException when dimensions disagree.
 	 * @return The inverse of current matrix.
 	 */
@@ -692,7 +772,7 @@ public class SparseMatrix implements Serializable{
 	
 	/**
 	 * Calculate Cholesky decomposition of the matrix.
-	 * </br>¼ÆËã¸Ã¾ØÕóµÄ¿ÂÁÐË¹»ù·Ö½â¾ØÕó
+	 * </br>ï¿½ï¿½ï¿½ï¿½Ã¾ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½
 	 * @throws RuntimeException when matrix is not square.
 	 * @return The Cholesky decomposition result.
 	 */
@@ -729,7 +809,7 @@ public class SparseMatrix implements Serializable{
 	
 	/**
 	 * Generate a covariance matrix of the current matrix.
-	 * </br>»ñµÃ¸Ã¾ØÕóµÄÐ­·½²î¾ØÕó
+	 * </br>ï¿½ï¿½Ã¸Ã¾ï¿½ï¿½ï¿½ï¿½Ð­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @return The covariance matrix of the current matrix.
 	 */
 	public SparseMatrix covariance() {
